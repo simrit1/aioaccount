@@ -1,4 +1,3 @@
-import aiosmtplib
 import aiojobs
 
 from typing import Union
@@ -38,6 +37,17 @@ class AccountHandler:
                  password_policy: PasswordPolicy = PasswordPolicy(),
                  smtp: SmtpClient = None,
                  ) -> None:
+        """Configure how the account handler works.
+
+        Parameters
+        ----------
+        engine : Union[MongoEngine, SQLEngine]
+            Engine for storing accounts.
+        password_policy : PasswordPolicy, optional
+            Password policies, by default PasswordPolicy()
+        smtp : SmtpClient, optional
+            Smtp client for email validation, by default None
+        """
 
         if isinstance(engine, SQLEngine):
             self._db = engine._connection
