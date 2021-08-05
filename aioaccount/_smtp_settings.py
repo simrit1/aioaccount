@@ -1,3 +1,4 @@
+from typing import Union
 import aiosmtplib
 
 
@@ -22,13 +23,15 @@ class SmtpHtml:
 class SmtpClient:
     def __init__(self, host: str, port: int,
                  url: str, html: SmtpHtml = None,
+                 raw: Union[str, None] =
+                 "Please confirm your email\n{validation_link}",
                  **kwargs) -> None:
         """Used to configure SMTP.
 
         Parameters
         ----------
         host : str
-        port : int
+        port : int{validation_link}
         url : str
             Url user follows for validation
             If it doesn't contain '{validation_code}'
@@ -39,6 +42,10 @@ class SmtpClient:
             https://example.com/validate?code={validation_code}
         html: SmtpHtml, optional
             by default None
+        raw : str, optional
+            Should contain 'validation_link' otherwise
+            appended at the end of the string.
+            by default 'Please confirm your email\n{validation_link}'
 
         Notes
         -----
@@ -55,5 +62,12 @@ class SmtpClient:
         )
 
         self._url = url
-        self._contains_placement = "{validation_code}" in self._url
+        self._url_contains_placement = "{validation_code}" in self._url
+
+        self._raw = raw
+        self._raw_contains_placement = (
+            "{validation_link}" in self._raw
+            if self._raw else False
+        )
+
         self._html = html
