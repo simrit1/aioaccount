@@ -5,7 +5,6 @@ databases[mysql]
 databases[sqlite]
 SQLAlchemy
 motor
-secrets
 email-validator
 aiosmtplib
 aiojobs
