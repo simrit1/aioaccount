@@ -29,7 +29,7 @@ __all__ = [
 
 
 class AccountHandler:
-    _smtp: Union[aiosmtplib.SMTP, None]
+    _smtp: Union[SmtpClient, None]
     _db: Union[Database, AsyncIOMotorClient]
     _jobs: Union[aiojobs.Scheduler, None]
     _policy: Union[ExtPP, None]
