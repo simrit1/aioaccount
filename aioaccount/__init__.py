@@ -8,6 +8,8 @@ from password_strength import PasswordPolicy as ExtPP
 from ._engines import SQLEngine, MongoEngine
 from ._smtp_settings import SmtpClient
 from ._pass_policy import PasswordPolicy
+from ._sql import create_tables, SqlWrapper
+from ._mongo import MongoWrapper
 
 __version__ = "0.0.0"
 __url__ = "https://aioaccount.readthedocs.io/en/latest/"
@@ -32,6 +34,7 @@ class AccountHandler:
     _db: Union[Database, AsyncIOMotorClient]
     _jobs: Union[aiojobs.Scheduler, None]
     _policy: Union[ExtPP, None]
+    _db_wrapper: Union[SqlWrapper, MongoWrapper]
 
     def __init__(self, engine: Union[MongoEngine, SQLEngine],
                  password_policy: PasswordPolicy = PasswordPolicy(),
@@ -51,10 +54,14 @@ class AccountHandler:
 
         if isinstance(engine, SQLEngine):
             self._db = engine._connection
+            self._db_wrapper = SqlWrapper(self._db)
+
+            create_tables(str(engine._connection.url))
         else:
             self._db = AsyncIOMotorClient(
                 engine._connection
-            )
+            )[engine._database]
+            self._db_wrapper = MongoWrapper(self._db)
 
         self._smtp = smtp
         self._policy = password_policy._policy

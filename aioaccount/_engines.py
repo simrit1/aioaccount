@@ -17,7 +17,8 @@ class SQLEngine:
 
 class MongoEngine:
     def __init__(self, host: str = "localhost",
-                 port: int = 27017) -> None:
+                 port: int = 27017, database: str = "aioaccount"
+                 ) -> None:
         """For mongodb engine.
 
         Parameters
@@ -29,3 +30,4 @@ class MongoEngine:
         """
 
         self._connection = f"mongodb://{host}:{port}"
+        self._database = database

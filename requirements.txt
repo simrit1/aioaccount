@@ -3,7 +3,7 @@ password-strength
 databases[postgresql]
 databases[mysql]
 databases[sqlite]
-SQLAlchemy
+sqlalchemy==1.3.20
 motor
 email-validator
 aiosmtplib
