@@ -11,6 +11,7 @@ from sqlalchemy import (
     func,
     select,
     and_ as sql_and,
+    or_ as sql_or,
     create_engine
 )
 
@@ -24,12 +25,12 @@ user_table = Table(
     metadata,
     Column(
         "user_id",
-        String(length=36),
+        String(length=32),
         primary_key=True
     ),
     Column(
         "name",
-        String(length=32)
+        String(length=128)
     ),
     Column(
         "email",
@@ -38,12 +39,15 @@ user_table = Table(
     ),
     Column(
         "email_vaildate",
-        String(length=43)  # secrets.token_urlsafe(32)
+        String(length=43),  # secrets.token_urlsafe(32)
+        nullable=True
     ),
     Column(
         "password",
         Binary()
-    )
+    ),
+    mysql_engine="InnoDB",
+    mysql_charset="utf8mb4"
 )
 
 
@@ -52,12 +56,12 @@ log_table = Table(
     metadata,
     Column(
         "log_id",
-        String(length=36),
+        String(length=32),
         primary_key=True
     ),
     Column(
         "user_id",
-        String(length=36),
+        String(length=32),
         ForeignKey("user.user_id")
     ),
     Column(
@@ -67,7 +71,9 @@ log_table = Table(
     Column(
         "log_type",
         Integer()
-    )
+    ),
+    mysql_engine="InnoDB",
+    mysql_charset="utf8mb4"
 )
 
 
@@ -105,12 +111,12 @@ class SqlWrapper:
         }
 
     async def exists(self, table: str,
-                     and_: dict) -> bool:
+                     or_: dict) -> bool:
         return await self._db.fetch_val(
             select([func.count()]).select_from(
                 self._tables[table]
             ).where(
-                sql_and(**and_)
+                sql_or(**or_)
             )
         ) != 0
 

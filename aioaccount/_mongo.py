@@ -10,9 +10,10 @@ class MongoWrapper:
     def __init__(self, db: AsyncIOMotorClient) -> None:
         self._db = db
 
-    async def exists(self, table: str,
-                     and_: dict) -> bool:
-        return await self._db[table].count_documents(and_) != 0
+    async def exists(self, table: str, or_: dict) -> bool:
+        return await self._db[table].count_documents(
+            {"$or": or_}
+        ) != 0
 
     async def delete(self, table: str,
                      and_: dict) -> None:
