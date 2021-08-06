@@ -22,8 +22,8 @@ class DetailsExistError(AccountDetailsError):
 
 
 class PasswordPolicyError(AccountDetailsError):
-    def __init__(self, failed: list,
+    def __init__(self, fails: list,
                  msg: str = "Password doesn't meet password policy.",
                  *args: object) -> None:
-        self.failed = failed
+        self.fails = fails
         super().__init__(msg, *args)
