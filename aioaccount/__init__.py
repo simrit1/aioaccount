@@ -1,12 +1,12 @@
 import aiojobs
 
-from typing import Union
+from typing import Tuple, Union
 from databases import Database
 from secrets import token_urlsafe
 from motor.motor_asyncio import AsyncIOMotorClient
 from password_strength import PasswordPolicy as ExtPP
 from email_validator import validate_email, EmailNotValidError
-from bcrypt import hashpw, gensalt
+from bcrypt import hashpw, gensalt, checkpw
 
 from ._engines import SQLEngine, MongoEngine
 from ._smtp_settings import SmtpClient
@@ -19,10 +19,12 @@ from ._errors import (
     EmailError,
     DetailsExistError,
     PasswordPolicyError,
-    AccountNameTooLong
+    AccountNameTooLong,
+    InvalidLogin
 )
 from ._util import generate_id
 from ._models import UserModel
+from ._user import User
 
 __version__ = "0.0.0"
 __url__ = "https://aioaccount.readthedocs.io/en/latest/"
@@ -105,6 +107,65 @@ class AccountHandler:
             await self._db.disconnect()
 
         await self._jobs.close()
+
+    def user(self, user_id: str) -> User:
+        """Used to interact with user.
+
+        Parameters
+        ----------
+        user_id : str
+
+        Returns
+        -------
+        User
+        """
+
+        return User(self, user_id)
+
+    async def login(self, password: str, name: str = None,
+                    email: str = None) -> Tuple[UserModel, User]:
+        """Used to validate user's login.
+
+        Parameters
+        ----------
+        password : str
+        name : str, optional
+            by default None
+        email : str, optional
+            by default None
+
+        Returns
+        -------
+        UserModel
+            Holds info on user.
+        User
+            Used to interact with user.
+
+        Raises
+        ------
+        InvalidLogin
+            Raised when user login is invalid.
+        """
+
+        assert not name or not email, "Email or name is required."
+
+        if name:
+            search = {
+                "name": name
+            }
+        else:
+            search = {
+                "email": email
+            }
+
+        row = await self._db_wrapper.get("user", search)
+        if not row:
+            raise InvalidLogin()
+
+        if not checkpw(password.encode(), row["password"]):
+            raise InvalidLogin()
+
+        return UserModel(**row), self.user(row["user_id"])
 
     async def create_account(self, name: str, password: str,
                              email: str = None) -> UserModel:

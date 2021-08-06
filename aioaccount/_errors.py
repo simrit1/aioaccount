@@ -16,14 +16,16 @@ class AccountNameTooLong(AccountDetailsError):
 
 
 class DetailsExistError(AccountDetailsError):
-    def __init__(self, msg: str = "Account details already used.",
-                 *args: object) -> None:
-        super().__init__(msg, *args)
+    def __init__(self, *args: object) -> None:
+        super().__init__("Account details already used.", *args)
 
 
 class PasswordPolicyError(AccountDetailsError):
-    def __init__(self, fails: list,
-                 msg: str = "Password doesn't meet password policy.",
-                 *args: object) -> None:
+    def __init__(self, fails: list, *args: object) -> None:
         self.fails = fails
-        super().__init__(msg, *args)
+        super().__init__("Password doesn't meet password policy.", *args)
+
+
+class InvalidLogin(AioAccountError):
+    def __init__(self, *args: object) -> None:
+        super().__init__("Provided details are incorrect.", *args)

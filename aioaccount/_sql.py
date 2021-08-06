@@ -5,9 +5,6 @@ from sqlalchemy import (
     Column,
     Binary,
     String,
-    TIMESTAMP,
-    Integer,
-    ForeignKey,
     func,
     select,
     and_ as sql_and,
@@ -51,32 +48,6 @@ user_table = Table(
 )
 
 
-log_table = Table(
-    "log",
-    metadata,
-    Column(
-        "log_id",
-        String(length=32),
-        primary_key=True
-    ),
-    Column(
-        "user_id",
-        String(length=32),
-        ForeignKey("user.user_id")
-    ),
-    Column(
-        "at",
-        TIMESTAMP
-    ),
-    Column(
-        "log_type",
-        Integer()
-    ),
-    mysql_engine="InnoDB",
-    mysql_charset="utf8mb4"
-)
-
-
 def create_tables(url: str) -> None:
     url = url.lower()
 
@@ -106,8 +77,7 @@ class SqlWrapper:
         self._db = db
 
         self._tables = {
-            "user": user_table,
-            "log": log_table
+            "user": user_table
         }
 
     async def exists(self, table: str,
