@@ -168,7 +168,7 @@ class AccountHandler:
         return UserModel(**row), self.user(row["user_id"])
 
     async def create_account(self, name: str, password: str,
-                             email: str = None) -> UserModel:
+                             email: str = None) -> Tuple[UserModel, User]:
         """Used to create a user account.
 
         Parameters
@@ -183,6 +183,9 @@ class AccountHandler:
         Returns
         -------
         UserModel
+            Holds info on user.
+        User
+            Used to interact with user.
 
         Raises
         ------
@@ -193,7 +196,7 @@ class AccountHandler:
         PasswordPolicyError
             Raised when password doesn't meet password policy
         AccountNameTooLong
-            Raised when name over 128 chars.
+            Raised when name over 128 characters.
         """
 
         if len(name) > self.__MAX_NAME_LEN:
@@ -241,4 +244,4 @@ class AccountHandler:
 
         await self._db_wrapper.insert("user", values)
 
-        return user_modal
+        return user_modal, self.user(values["user_id"])
