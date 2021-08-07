@@ -14,6 +14,8 @@ from sqlalchemy import (
 
 from databases import Database
 
+from ._const import _MAX_NAME_LEN
+
 
 metadata = MetaData()
 
@@ -27,7 +29,7 @@ user_table = Table(
     ),
     Column(
         "name",
-        String(length=128)
+        String(length=_MAX_NAME_LEN)
     ),
     Column(
         "email",

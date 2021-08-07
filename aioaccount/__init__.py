@@ -9,7 +9,7 @@ from email_validator import validate_email, EmailNotValidError
 from bcrypt import hashpw, gensalt, checkpw
 
 from ._engines import SQLEngine, MongoEngine
-from ._smtp_settings import SmtpClient
+from ._smtp import SmtpClient
 from ._pass_policy import PasswordPolicy
 from ._sql import create_tables, SqlWrapper
 from ._mongo import MongoWrapper
@@ -25,6 +25,7 @@ from ._errors import (
 from ._util import generate_id
 from ._models import UserModel
 from ._user import User
+from ._const import _MAX_NAME_LEN
 
 __version__ = "0.0.0"
 __url__ = "https://aioaccount.readthedocs.io/en/latest/"
@@ -57,8 +58,6 @@ class AccountHandler:
     _jobs: aiojobs.Scheduler
     _policy: ExtPP
     _db_wrapper: Union[SqlWrapper, MongoWrapper]
-
-    __MAX_NAME_LEN = 128
 
     def __init__(self, engine: Union[MongoEngine, SQLEngine],
                  password_policy: PasswordPolicy = PasswordPolicy(),
@@ -199,9 +198,9 @@ class AccountHandler:
             Raised when name over 128 characters.
         """
 
-        if len(name) > self.__MAX_NAME_LEN:
+        if len(name) > _MAX_NAME_LEN:
             raise AccountNameTooLong(
-                f"Name is over {self.__MAX_NAME_LEN} characters."
+                f"Name is over {_MAX_NAME_LEN} characters."
             )
 
         results = self._policy.test(password)
@@ -232,8 +231,12 @@ class AccountHandler:
                 user_modal.email_confirmed = False
                 values["email_vaildate"] = token_urlsafe(32)
 
-                # send email
-                await self._jobs.spawn()
+                await self._jobs.spawn(
+                    self._smtp._send(
+                        values["email"],
+                        values["email_vaildate"]
+                    )
+                )
         else:
             if await self._db_wrapper.exists("user", values):
                 raise DetailsExistError()
