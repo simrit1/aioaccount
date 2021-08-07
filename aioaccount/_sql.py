@@ -5,6 +5,7 @@ from sqlalchemy import (
     Column,
     Binary,
     String,
+    Boolean,
     func,
     select,
     and_ as sql_and,
@@ -40,6 +41,10 @@ user_table = Table(
         "email_vaildate",
         String(length=43),  # secrets.token_urlsafe(32)
         nullable=True
+    ),
+    Column(
+        "email_confirmed",
+        Boolean()
     ),
     Column(
         "password",

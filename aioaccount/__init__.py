@@ -230,6 +230,7 @@ class AccountHandler:
             if self._smtp:
                 user_modal.email_confirmed = False
                 values["email_vaildate"] = token_urlsafe(32)
+                values["email_confirmed"] = False  # type: ignore
 
                 await self._jobs.spawn(
                     self._smtp._send(
