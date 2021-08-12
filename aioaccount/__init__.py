@@ -20,7 +20,8 @@ from ._errors import (
     DetailsExistError,
     PasswordPolicyError,
     AccountNameTooLong,
-    InvalidLogin
+    InvalidLogin,
+    UnableToConfirmEmail
 )
 from ._util import generate_id
 from ._models import UserModel
@@ -48,7 +49,8 @@ __all__ = [
     "DetailsExistError",
     "UserModel",
     "PasswordPolicyError",
-    "AccountNameTooLong"
+    "AccountNameTooLong",
+    "UnableToConfirmEmail"
 ]
 
 
@@ -121,6 +123,31 @@ class AccountHandler:
 
         return User(self, user_id)
 
+    def _validate_details(self, name: str = None,
+                          password: str = None) -> None:
+        """Used to validate details.
+
+        Parameters
+        ----------
+        name : str, optional
+        password : str, optional
+
+        Raises
+        ------
+        AccountNameTooLong
+        PasswordPolicyError
+        """
+
+        if name and len(name) > _MAX_NAME_LEN:
+            raise AccountNameTooLong(
+                f"Name is over {_MAX_NAME_LEN} characters."
+            )
+
+        if password:
+            results = self._policy.test(password)
+            if results:
+                raise PasswordPolicyError(results)
+
     async def login(self, password: str, name: str = None,
                     email: str = None) -> Tuple[UserModel, User]:
         """Used to validate user's login.
@@ -166,13 +193,97 @@ class AccountHandler:
 
         return UserModel(**row), self.user(row["user_id"])
 
-    async def create_account(self, name: str, password: str,
-                             email: str = None) -> Tuple[UserModel, User]:
+    def _email_regenerate(self) -> dict:
+        return {
+            "email_vaildate": token_urlsafe(32),
+            "email_confirmed": False
+        }
+
+    async def confirm_email(self, email: str, given_code: str) -> User:
+        """Used to confirm email from given code.
+
+        Parameters
+        ----------
+        email : str
+            User's email
+        given_code : str
+            Code the user provided.
+
+        Returns
+        -------
+        User
+
+        Raises
+        ------
+        UnableToConfirmEmail
+        """
+
+        result = await self._db_wrapper.get("user", {"email": email})
+        if not result:
+            raise UnableToConfirmEmail()
+
+        # Midigates timing attacks.
+        valid = checkpw(
+            given_code.encode(), hashpw(
+                result["email_vaildate"].encode(),
+                gensalt()
+            )
+        )
+        if not valid:
+            raise UnableToConfirmEmail()
+
+        await self._db_wrapper.update(
+            "user",
+            {"user_id": result["user_id"]},
+            {
+                "email_vaildate": None,
+                "email_confirmed": True
+            }
+        )
+
+        return self.user(result["user_id"])
+
+    async def to_user(self, email: str = None, name: str = None) -> User:
+        """Used to convert email or user to user object.
+
+        Parameters
+        ----------
+        email : str, optional
+            by default None
+        name : str, optional
+            by default None
+
+        Returns
+        -------
+        User
+
+        Raises
+        ------
+        AccountDetailsError
+        """
+
+        values = {}
+        if email:
+            values["email"] = email
+        elif name:
+            values["user"] = name
+        else:
+            raise AccountDetailsError("User or email must be provided.")
+
+        result = await self._db_wrapper.get("user", values)
+        if not result:
+            raise AccountDetailsError("No user found with those details.")
+
+        return self.user(result["user_id"])
+
+    async def create_account(self, password: str,
+                             email: str = None, name: str = None
+                             ) -> Tuple[UserModel, User]:
         """Used to create a user account.
 
         Parameters
         ----------
-        name : str
+        name : str, optional
             Unique name of user, max length 128
         password : str
             Password of user
@@ -198,19 +309,16 @@ class AccountHandler:
             Raised when name over 128 characters.
         """
 
-        if len(name) > _MAX_NAME_LEN:
-            raise AccountNameTooLong(
-                f"Name is over {_MAX_NAME_LEN} characters."
-            )
+        assert not name or not email, "Email or name is required."
 
-        results = self._policy.test(password)
-        if results:
-            raise PasswordPolicyError(results)
+        self._validate_details(name, password)
 
         values = {
-            "user_id": generate_id(),
-            "name": name
+            "user_id": generate_id()
         }
+
+        if name:
+            values["name"] = name
 
         user_modal = UserModel(**values)
 
@@ -229,8 +337,10 @@ class AccountHandler:
 
             if self._smtp:
                 user_modal.email_confirmed = False
-                values["email_vaildate"] = token_urlsafe(32)
-                values["email_confirmed"] = False  # type: ignore
+                values = {
+                    **values,
+                    **self._email_regenerate()
+                }
 
                 await self._jobs.spawn(
                     self._smtp._send(

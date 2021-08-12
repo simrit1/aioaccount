@@ -8,6 +8,6 @@ class UserModel:
     """
 
     user_id: str
-    name: str
+    name: Union[None, str] = None
     email: Union[None, str] = None
     email_confirmed: Union[None, bool] = None

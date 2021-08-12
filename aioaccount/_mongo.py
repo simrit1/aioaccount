@@ -35,10 +35,7 @@ class MongoWrapper:
 
     async def iterate(self, table: str, and_: dict = None
                       ) -> AsyncGenerator[Optional[Mapping], None]:
-        if and_:
-            find = self._db[table].find(and_)
-        else:
-            find = self._db[table].find()
+        find = self._db[table].find(and_) if and_ else self._db[table].find()
 
         async for document in find:
             yield document

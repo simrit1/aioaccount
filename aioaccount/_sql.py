@@ -30,7 +30,8 @@ user_table = Table(
     ),
     Column(
         "name",
-        String(length=_MAX_NAME_LEN)
+        String(length=_MAX_NAME_LEN),
+        nullable=True
     ),
     Column(
         "email",
@@ -44,7 +45,8 @@ user_table = Table(
     ),
     Column(
         "email_confirmed",
-        Boolean()
+        Boolean(),
+        nullable=True
     ),
     Column(
         "password",
