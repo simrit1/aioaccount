@@ -138,7 +138,7 @@ class User:
         PasswordResetInvalid
         """
 
-        result = await self._upper._db_wrapper.get("user", self.__and)
+        result = await self.__raw_user()
         if (not result or "password_reset_code" not in result or
                 not result["password_reset_code"]):
             raise PasswordResetInvalid()
