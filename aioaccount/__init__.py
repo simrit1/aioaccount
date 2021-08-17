@@ -7,6 +7,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from password_strength import PasswordPolicy as ExtPP
 from email_validator import validate_email, EmailNotValidError
 from bcrypt import hashpw, gensalt, checkpw
+from datetime import timedelta
 
 from ._engines import SQLEngine, MongoEngine
 from ._smtp import SmtpClient
@@ -64,6 +65,7 @@ class AccountHandler:
     def __init__(self, engine: Union[MongoEngine, SQLEngine],
                  password_policy: PasswordPolicy = PasswordPolicy(),
                  smtp: SmtpClient = None,
+                 password_reset_expires: timedelta = timedelta(hours=24)
                  ) -> None:
         """Configure how the account handler works.
 
@@ -75,6 +77,9 @@ class AccountHandler:
             Password policies, by default PasswordPolicy()
         smtp : SmtpClient, optional
             Smtp client for email validation, by default None
+        password_reset_expires : timedelta, optional
+            Amount of time until a password reset expires,
+            by default timedelta(hours=24)
         """
 
         if isinstance(engine, SQLEngine):
@@ -90,6 +95,7 @@ class AccountHandler:
 
         self._smtp = smtp
         self._policy = password_policy._policy
+        self._password_reset_expires = password_reset_expires
 
     async def start(self) -> None:
         """Opens needed sessions.
@@ -345,7 +351,8 @@ class AccountHandler:
                 await self._jobs.spawn(
                     self._smtp._send(
                         values["email"],
-                        values["email_vaildate"]
+                        values["email_vaildate"],
+                        "confirm"
                     )
                 )
         else:

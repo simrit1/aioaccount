@@ -20,6 +20,11 @@ class UnableToConfirmEmail(AccountDetailsError):
         super().__init__("Unable to confirm email with given details.", *args)
 
 
+class PasswordResetInvalid(AccountDetailsError):
+    def __init__(self, *args: object) -> None:
+        super().__init__("Password reset code is invalid.", *args)
+
+
 class DetailsExistError(AccountDetailsError):
     def __init__(self, *args: object) -> None:
         super().__init__("Account details already used.", *args)

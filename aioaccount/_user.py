@@ -1,8 +1,16 @@
 from typing import Mapping, Optional, TYPE_CHECKING
 from bcrypt import checkpw, hashpw, gensalt
+from email_validator import validate_email, EmailNotValidError
+from secrets import token_urlsafe
+from datetime import datetime
 
 from ._models import UserModel
-from ._errors import InvalidUserId, InvalidLogin
+from ._errors import (
+    InvalidUserId,
+    InvalidLogin,
+    EmailError,
+    PasswordResetInvalid
+)
 
 
 if TYPE_CHECKING:
@@ -53,11 +61,110 @@ class User:
             }
         )
 
-    async def update_email(self, new_email) -> None:
-        pass
+    async def update_email(self, new_email: str) -> None:
+        """Used to update a user's email.
+
+        Parameters
+        ----------
+        new_email : str
+
+        Raises
+        ------
+        EmailError
+        """
+
+        try:
+            valid = validate_email(new_email)
+        except EmailNotValidError as error:
+            raise EmailError(str(error))
+
+        values = {
+            "email": valid.email,
+        }
+
+        if self._upper._smtp:
+            values = {
+                **values,
+                **self._upper._email_regenerate()
+            }
+
+            await self._upper._jobs.spawn(
+                self._upper._smtp._send(
+                    values["email"],
+                    values["email_vaildate"],
+                    "confirm"
+                )
+            )
+
+        await self._upper._db_wrapper.update(
+            "user", self.__and, values
+        )
 
     async def reset_password(self) -> None:
-        pass
+        """Used to reset a password
+        """
+
+        user = await self.get()
+
+        values = {
+            "password_reset_code": token_urlsafe(32),
+            "password_reset_generated": datetime.now()
+        }
+
+        await self._upper._db_wrapper.update(
+            "user", self.__and, values
+        )
+
+        if self._upper._smtp and user.email:
+            await self._upper._jobs.spawn(
+                self._upper._smtp._send(
+                    user.email,
+                    values["password_reset_code"],
+                    "reset"
+                )
+            )
+
+    async def password_confirm(self, new_password: str,
+                               given_code: str) -> None:
+        """Used to reset password from password reset code.
+
+        Parameters
+        ----------
+        new_password : str
+        given_code : str
+
+        Raises
+        ------
+        PasswordResetInvalid
+        """
+
+        result = await self._upper._db_wrapper.get("user", self.__and)
+        if (not result or "password_reset_code" not in result or
+                not result["password_reset_code"]):
+            raise PasswordResetInvalid()
+
+        if (datetime.now() - self._upper._password_reset_expires >
+                result["password_reset_generated"]):
+            raise PasswordResetInvalid()
+
+        # Midigates timing attacks.
+        valid = checkpw(
+            given_code.encode(), hashpw(
+                result["password_reset_code"].encode(),
+                gensalt()
+            )
+        )
+
+        if not valid:
+            raise PasswordResetInvalid()
+
+        self._upper._validate_details(password=new_password)
+
+        await self._upper._db_wrapper.update(
+            "user", self.__and, {
+                "password": hashpw(new_password.encode(), gensalt())
+            }
+        )
 
     async def get(self) -> UserModel:
         """Used to get details on user.

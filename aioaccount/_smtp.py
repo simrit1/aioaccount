@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import aiosmtplib
 
 from email.mime.text import MIMEText
@@ -32,10 +34,7 @@ class SmtpHtml:
 
 class SmtpClient:
     def __init__(self, host: str, port: int,
-                 url: str, email: str, subject: str,
-                 html: SmtpHtml = None,
-                 raw: str =
-                 "Please confirm your email\n{validation_link}",
+                 url: str, email: str,
                  **kwargs) -> None:
         """Used to configure SMTP.
 
@@ -53,12 +52,6 @@ class SmtpClient:
             https://example.com/validate?code={validation_code}
         email : str
             Email address to send as.
-        html: SmtpHtml, optional
-            by default None
-        raw : str, optional
-            Should contain 'validation_link' otherwise
-            appended at the end of the string.
-            by default 'Please confirm your email\n{validation_link}'
 
         Notes
         -----
@@ -77,24 +70,106 @@ class SmtpClient:
         self._url = url
         self._url_contains_placement = "{validation_code}" in self._url
 
-        self._raw = raw
-        self._raw_contains_placement = (
-            "{validation_link}" in self._raw
-            if self._raw else False
-        )
-
         self._email = email
-        self._subject = subject
 
-        self._html = html
+        self._email_types = {
+            "confirm": {
+                "raw": "Please confirm your email\n{link}",
+                "raw_place": True,
+                "html": None,
+                "subject": "Please confirm your email!"
+            },
+            "reset": {
+                "raw": "Follow this link to reset your password\n{link}",
+                "raw_place": True,
+                "html": None,
+                "subject": "Password reset request"
+            }
+        }
 
-    async def _send(self, email: str, code: str) -> None:
+    def confrim_layout(self, html: SmtpHtml = None, raw: str = None,
+                       subject: str = None
+                       ) -> SmtpClient:
+        """Used for confirm email layout.
+
+        Parameters
+        ----------
+        html: SmtpHtml, optional
+            by default None
+        raw : str, optional
+            Should contain 'link' otherwise
+            appended at the end of the string,
+            by default None
+        subject : str, optional
+            Used to set email subject for confirmations.
+            by default None
+
+        Returns
+        -------
+        SmtpClient
+        """
+
+        if raw:
+            self._email_types["confirm"]["raw"] = raw
+            self._email_types["confirm"]["raw_place"] = (
+                "{link}" in raw
+                if raw else False
+            )
+
+        if html:
+            self._email_types["confirm"]["html"] = html
+
+        if subject:
+            self._email_types["confirm"]["subject"] = subject
+
+        return self
+
+    def reset_layout(self, html: SmtpHtml = None, raw: str = None,
+                     subject: str = None
+                     ) -> SmtpClient:
+        """Used for reset email layout.
+
+        Parameters
+        ----------
+        html: SmtpHtml, optional
+            by default None
+        raw : str, optional
+            Should contain 'link' otherwise
+            appended at the end of the string,
+            by default None
+        subject : str, optional
+            Used to set email subject for resets.
+            by default None
+
+        Returns
+        -------
+        SmtpClient
+        """
+
+        if raw:
+            self._email_types["reset"]["raw"] = raw
+            self._email_types["reset"]["raw_place"] = (
+                "{link}" in raw
+                if raw else False
+            )
+
+        if html:
+            self._email_types["reset"]["html"] = html
+
+        if subject:
+            self._email_types["reset"]["subject"] = subject
+
+        return self
+
+    async def _send(self, email: str, code: str, type_: str) -> None:
         """Used to send a email.
 
         Parameters
         ----------
         email : str
         code : str
+        type_ : str
+            email type
         """
 
         if self._url_contains_placement:
@@ -102,23 +177,28 @@ class SmtpClient:
         else:
             link = self._url + code
 
-        if self._html:
-            message = MIMEText(self._html._jinja2.get_template(
-                self._html._file
-            ).render({self._html._url_key: link}), "html", "utf-8")
+        email_type = self._email_types[type_]
+
+        if email_type["html"]:
+            message = MIMEText(email_type["html"]._jinja2.get_template(
+                email_type["html"]._file
+            ).render({email_type["html"]._url_key: link}), "html", "utf-8")
         else:
             message = EmailMessage()
 
-            if self._raw_contains_placement:
-                content = self._raw.format(validation_link=link)
+            if email_type["raw"]:
+                if email_type["raw_place"]:
+                    content = email_type["raw"].format(link=link)
+                else:
+                    content = email_type["raw"] + link
             else:
-                content = self._raw + link
+                content = link
 
             message.set_content(content)
 
         message["From"] = self._email
         message["To"] = email
-        message["Subject"] = self._subject
+        message["Subject"] = email_type["subject"]
 
         async with self._client:
             await self._client.send_message(message)

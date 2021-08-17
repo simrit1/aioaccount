@@ -10,7 +10,8 @@ from sqlalchemy import (
     select,
     and_ as sql_and,
     or_ as sql_or,
-    create_engine
+    create_engine,
+    TIMESTAMP
 )
 
 from databases import Database
@@ -41,6 +42,16 @@ user_table = Table(
     Column(
         "email_vaildate",
         String(length=43),  # secrets.token_urlsafe(32)
+        nullable=True
+    ),
+    Column(
+        "password_reset_code",
+        String(length=43),  # secrets.token_urlsafe(32)
+        nullable=True
+    ),
+    Column(
+        "password_reset_generated",
+        TIMESTAMP,
         nullable=True
     ),
     Column(
