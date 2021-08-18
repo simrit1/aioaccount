@@ -179,19 +179,22 @@ class AccountHandler:
             Raised when user login is invalid.
         """
 
-        assert not name or not email, "Email or name is required."
-
         if name:
             search = {
                 "name": name
             }
-        else:
+        elif email:
             search = {
                 "email": email
             }
+        else:
+            assert False, "Email or name is required."
 
         row = await self._db_wrapper.get("user", search)
         if not row:
+            raise InvalidLogin()
+
+        if self._smtp and row["email"] and not row["email_confirmed"]:
             raise InvalidLogin()
 
         if not checkpw(password.encode(), row["password"]):
