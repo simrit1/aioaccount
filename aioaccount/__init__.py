@@ -177,6 +177,7 @@ class AccountHandler:
         ------
         InvalidLogin
             Raised when user login is invalid.
+        AccountDetailsError
         """
 
         if name:
@@ -188,7 +189,7 @@ class AccountHandler:
                 "email": email
             }
         else:
-            assert False, "Email or name is required."
+            raise AccountDetailsError("User or email must be provided.")
 
         row = await self._db_wrapper.get("user", search)
         if not row:
@@ -316,9 +317,11 @@ class AccountHandler:
             Raised when password doesn't meet password policy
         AccountNameTooLong
             Raised when name over 128 characters.
+        AccountDetailsError
         """
 
-        assert not name or not email, "Email or name is required."
+        if not name and not email:
+            raise AccountDetailsError("User or email must be provided.")
 
         self._validate_details(name, password)
 
@@ -330,7 +333,6 @@ class AccountHandler:
             values["name"] = name
 
         user_modal = UserModel(**values)
-
         if email:
             try:
                 valid = validate_email(email)
