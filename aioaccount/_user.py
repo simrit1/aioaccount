@@ -162,7 +162,9 @@ class User:
 
         await self._upper._db_wrapper.update(
             "user", self.__and, {
-                "password": hashpw(new_password.encode(), gensalt())
+                "password": hashpw(new_password.encode(), gensalt()),
+                "password_reset_code": None,
+                "password_reset_generated": None
             }
         )
 
