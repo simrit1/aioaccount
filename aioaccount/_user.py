@@ -100,8 +100,14 @@ class User:
             "user", self.__and, values
         )
 
-    async def reset_password(self) -> None:
+    async def reset_password(self) -> str:
         """Used to reset a password
+
+        Returns
+        -------
+        str
+            The password reset code, if SMTP
+            is being used you shouldn't need to touch this.
         """
 
         user = await self.get()
@@ -123,6 +129,8 @@ class User:
                     "reset"
                 )
             )
+
+        return values["password_reset_code"]
 
     async def password_confirm(self, new_password: str,
                                given_code: str) -> None:
