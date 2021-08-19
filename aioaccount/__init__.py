@@ -52,7 +52,8 @@ __all__ = [
     "UserModel",
     "PasswordPolicyError",
     "AccountNameTooLong",
-    "UnableToConfirmEmail"
+    "UnableToConfirmEmail",
+    "AccountNameInvalidCharacters"
 ]
 
 
