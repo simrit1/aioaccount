@@ -140,10 +140,6 @@ class SqlWrapper:
         )
 
     async def get(self, table, and_: dict) -> Optional[Mapping]:
-        and_ = {
-            self._tables[table].c[key]: value
-            for key, value in and_.items()
-        }
         return await self._db.fetch_one(
             self._tables[table].select().where(
                 sql_and(*self.__convert_to_clauses(self._tables[table], and_))
@@ -155,10 +151,6 @@ class SqlWrapper:
         query = self._tables[table].select()
 
         if and_:
-            and_ = {
-                self._tables[table].c[key]: value
-                for key, value in and_.items()
-            }
             query = query.where(
                 sql_and(*self.__convert_to_clauses(self._tables[table], and_))
             )
