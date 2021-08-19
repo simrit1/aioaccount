@@ -66,7 +66,7 @@ class TestAccount(TestBase):
         try:
             model, user = await self.handler.create_account(
                 password=self.valid_password,
-                email="wardpearce@pm.me"
+                email="example@example.com"
             )
         except PasswordPolicyError as e:
             print(e.fails)
@@ -87,7 +87,7 @@ class TestAccount(TestBase):
     async def test_valid_account_both(self) -> None:
         model, user = await self.handler.create_account(
             password=self.valid_password,
-            name="ward",
+            name="notward",
             email="wardpearce@pm.me"
         )
 
