@@ -41,6 +41,8 @@ jobs:
           mysql password: ${{ secrets.DATABASE_PASS }}
           host port: 3800
           container port: 3800
+      - name: Wait for MySQL to startup
+        run: sleep 15
       - name: Dummy SMTP server
         uses: upgundecha/start-sendria-github-action@v1.0.0
         with:
