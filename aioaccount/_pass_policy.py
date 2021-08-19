@@ -7,7 +7,7 @@ class PasswordPolicy:
                  numbers: int = 2,
                  special: int = 2,
                  nonletters: int = 2,
-                 strength: float = 0.66) -> None:
+                 **kwargs) -> None:
         """Used to set password policy.
 
         Parameters
@@ -25,9 +25,6 @@ class PasswordPolicy:
         nonletters : int, optional
             Min number of non letter characters,
             by default 2
-        strength : float, optional
-            Required strength of password
-            by default 0.66
         """
 
         self._policy = ExtPP.from_names(
@@ -36,5 +33,5 @@ class PasswordPolicy:
             numbers=numbers,
             special=special,
             nonletters=nonletters,
-            strength=strength
+            **kwargs
         )
