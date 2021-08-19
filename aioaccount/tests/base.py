@@ -27,8 +27,7 @@ class TestBase(asynctest.TestCase):
         self.handler = AccountHandler(
             engine=engine,
             smtp=SmtpClient(
-                **SMTP_SETTINGS,
-                url="https://example.com"
+                **SMTP_SETTINGS
             ) if self.use_smtp else None
         )
 
