@@ -33,7 +33,8 @@ setup(
     install_requires=get_requirements(),
     license=get_variable("__license__"),
     packages=[
-        "aioaccount"
+        "aioaccount",
+        "aioaccount.tests"
     ],
     python_requires=">=3.6",
     include_package_data=True,

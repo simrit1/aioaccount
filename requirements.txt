@@ -9,3 +9,4 @@ email-validator
 aiosmtplib
 aiojobs
 jinja2
+asynctest

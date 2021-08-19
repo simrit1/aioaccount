@@ -72,8 +72,8 @@ class User:
         Raises
         ------
         DetailsExistError
-        AccountNameTooLong
-        AccountNameInvalidCharacters
+        NameLengthInvalidError
+        NameInvalidCharactersError
         """
 
         self._upper._validate_details(name=name)

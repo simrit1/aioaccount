@@ -11,11 +11,11 @@ class EmailError(AccountDetailsError):
     pass
 
 
-class AccountNameTooLong(AccountDetailsError):
+class NameLengthInvalidError(AccountDetailsError):
     pass
 
 
-class AccountNameInvalidCharacters(AccountDetailsError):
+class NameInvalidCharactersError(AccountDetailsError):
     pass
 
 

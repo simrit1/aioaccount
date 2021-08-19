@@ -20,10 +20,10 @@ from ._errors import (
     EmailError,
     DetailsExistError,
     PasswordPolicyError,
-    AccountNameTooLong,
+    NameLengthInvalidError,
     InvalidLogin,
     UnableToConfirmEmail,
-    AccountNameInvalidCharacters
+    NameInvalidCharactersError
 )
 from ._util import generate_id
 from ._models import UserModel
@@ -51,9 +51,9 @@ __all__ = [
     "DetailsExistError",
     "UserModel",
     "PasswordPolicyError",
-    "AccountNameTooLong",
+    "NameLengthInvalidError",
     "UnableToConfirmEmail",
-    "AccountNameInvalidCharacters"
+    "NameInvalidCharactersError"
 ]
 
 
@@ -142,19 +142,20 @@ class AccountHandler:
 
         Raises
         ------
-        AccountNameTooLong
-        AccountNameInvalidCharacters
+        NameLengthInvalidError
+        NameInvalidCharactersError
         PasswordPolicyError
         """
 
         if name:
-            if len(name) > _MAX_NAME_LEN:
-                raise AccountNameTooLong(
-                    f"Name is over {_MAX_NAME_LEN} characters."
+            name_len = len(name)
+            if name_len > _MAX_NAME_LEN or name_len < 3:
+                raise NameLengthInvalidError(
+                    f"Name is over {_MAX_NAME_LEN} or below 3 characters."
                 )
 
             if not name.isalpha():
-                raise AccountNameInvalidCharacters(
+                raise NameInvalidCharactersError(
                     "Account name can only contain alpha characters."
                 )
 
@@ -324,7 +325,7 @@ class AccountHandler:
             Raised when email is invalid.
         PasswordPolicyError
             Raised when password doesn't meet password policy
-        AccountNameTooLong
+        NameLengthInvalidError
             Raised when name over 128 characters.
         AccountDetailsError
         """
