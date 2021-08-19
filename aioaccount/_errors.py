@@ -15,6 +15,10 @@ class AccountNameTooLong(AccountDetailsError):
     pass
 
 
+class AccountNameInvalidCharacters(AccountDetailsError):
+    pass
+
+
 class UnableToConfirmEmail(AccountDetailsError):
     def __init__(self, *args: object) -> None:
         super().__init__("Unable to confirm email with given details.", *args)

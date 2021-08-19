@@ -9,7 +9,8 @@ from ._errors import (
     InvalidUserId,
     InvalidLogin,
     EmailError,
-    PasswordResetInvalid
+    PasswordResetInvalid,
+    DetailsExistError
 )
 
 
@@ -61,6 +62,30 @@ class User:
             }
         )
 
+    async def update_name(self, name: str) -> None:
+        """Updates users name
+
+        Parameters
+        ----------
+        name : str
+
+        Raises
+        ------
+        DetailsExistError
+        AccountNameTooLong
+        AccountNameInvalidCharacters
+        """
+
+        self._upper._validate_details(name=name)
+
+        if await self._upper._db_wrapper.exists(
+                "user", {"name": name}):
+            raise DetailsExistError()
+
+        await self._upper._db_wrapper.update(
+            "user", self.__and, {"name": name}
+        )
+
     async def update_email(self, new_email: str) -> None:
         """Used to update a user's email.
 
@@ -71,12 +96,17 @@ class User:
         Raises
         ------
         EmailError
+        DetailsExistError
         """
 
         try:
             valid = validate_email(new_email)
         except EmailNotValidError as error:
             raise EmailError(str(error))
+
+        if await self._upper._db_wrapper.exists(
+                "user", {"email": valid.email}):
+            raise DetailsExistError()
 
         values = {
             "email": valid.email,

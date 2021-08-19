@@ -22,7 +22,8 @@ from ._errors import (
     PasswordPolicyError,
     AccountNameTooLong,
     InvalidLogin,
-    UnableToConfirmEmail
+    UnableToConfirmEmail,
+    AccountNameInvalidCharacters
 )
 from ._util import generate_id
 from ._models import UserModel
@@ -141,13 +142,20 @@ class AccountHandler:
         Raises
         ------
         AccountNameTooLong
+        AccountNameInvalidCharacters
         PasswordPolicyError
         """
 
-        if name and len(name) > _MAX_NAME_LEN:
-            raise AccountNameTooLong(
-                f"Name is over {_MAX_NAME_LEN} characters."
-            )
+        if name:
+            if len(name) > _MAX_NAME_LEN:
+                raise AccountNameTooLong(
+                    f"Name is over {_MAX_NAME_LEN} characters."
+                )
+
+            if not name.isalpha():
+                raise AccountNameInvalidCharacters(
+                    "Account name can only contain alpha characters."
+                )
 
         if password:
             results = self._policy.test(password)
