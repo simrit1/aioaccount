@@ -333,7 +333,10 @@ class AccountHandler:
         if not name and not email:
             raise AccountDetailsError("User or email must be provided.")
 
-        self._validate_details(name, password)
+        self._validate_details(
+            name=name,
+            password=password
+        )
 
         values = {
             "user_id": generate_id()

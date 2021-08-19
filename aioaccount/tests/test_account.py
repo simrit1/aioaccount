@@ -41,7 +41,7 @@ class TestAccount(TestBase):
         with self.assertRaises(NameLengthInvalidError):
             await self.handler.create_account(
                 password=self.valid_password,
-                name="war"
+                name="wa"
             )
 
         with self.assertRaises(NameLengthInvalidError):

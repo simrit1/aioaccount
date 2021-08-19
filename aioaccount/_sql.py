@@ -69,8 +69,6 @@ user_table = Table(
 
 
 def create_tables(url: str) -> None:
-    url = url.lower()
-
     if "mysql" in url:
         old_engine = "mysql"
         engine = "pymysql"
@@ -83,8 +81,14 @@ def create_tables(url: str) -> None:
     else:
         assert False, "Invalid database URL engine."
 
+    url_temp = url.replace(
+        old_engine, f"{old_engine}+{engine}"
+    )
+
+    print(url_temp)
+
     metadata.create_all(
-        create_engine(url.replace(old_engine, engine))
+        create_engine(url_temp)
     )
 
 
