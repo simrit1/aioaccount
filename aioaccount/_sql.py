@@ -98,6 +98,11 @@ class SqlWrapper:
             "user": user_table
         }
 
+    def __convert_to_clauses(self, table: Table, dict_: dict) -> list:
+        return [
+            table.c[key] == value for key, value in dict_.items()
+        ]
+
     async def exists(self, table: str,
                      or_: dict) -> bool:
         or_ = {
@@ -108,33 +113,25 @@ class SqlWrapper:
             select([func.count()]).select_from(
                 self._tables[table]
             ).where(
-                sql_or(**or_)
+                sql_or(*self.__convert_to_clauses(self._tables[table], or_))
             )
         ) != 0
 
     async def delete(self, table: str,
                      and_: dict) -> None:
-        and_ = {
-            self._tables[table].c[key]: value
-            for key, value in and_.items()
-        }
         await self._db.execute(
             self._tables[table].delete().where(
-                sql_and(**and_)
+                sql_and(*self.__convert_to_clauses(self._tables[table], and_))
             )
         )
 
     async def update(self, table: str,
                      and_: dict, values: dict) -> None:
-        and_ = {
-            self._tables[table].c[key]: value
-            for key, value in and_.items()
-        }
         await self._db.execute(
             self._tables[table].update().values(
                 **values
             ).where(
-                sql_and(**and_)
+                sql_and(*self.__convert_to_clauses(self._tables[table], and_))
             )
         )
 
@@ -153,7 +150,7 @@ class SqlWrapper:
         }
         return await self._db.fetch_one(
             self._tables[table].select().where(
-                sql_and(**and_)
+                sql_and(*self.__convert_to_clauses(self._tables[table], and_))
             )
         )
 
@@ -167,7 +164,7 @@ class SqlWrapper:
                 for key, value in and_.items()
             }
             query = query.where(
-                sql_and(**and_)
+                sql_and(*self.__convert_to_clauses(self._tables[table], and_))
             )
 
         async for row in self._db.iterate(query):
