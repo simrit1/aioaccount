@@ -100,6 +100,7 @@ class SqlWrapper:
 
     async def exists(self, table: str,
                      or_: dict) -> bool:
+        or_ = {key: self._tables[table].c[value] for key, value in or_.items()}
         return await self._db.fetch_val(
             select([func.count()]).select_from(
                 self._tables[table]
@@ -110,6 +111,10 @@ class SqlWrapper:
 
     async def delete(self, table: str,
                      and_: dict) -> None:
+        and_ = {
+            key: self._tables[table].c[value]
+            for key, value in and_.items()
+        }
         await self._db.execute(
             self._tables[table].delete().where(
                 sql_and(**and_)
@@ -118,6 +123,10 @@ class SqlWrapper:
 
     async def update(self, table: str,
                      and_: dict, values: dict) -> None:
+        and_ = {
+            key: self._tables[table].c[value]
+            for key, value in and_.items()
+        }
         await self._db.execute(
             self._tables[table].update().values(
                 **values
@@ -135,6 +144,10 @@ class SqlWrapper:
         )
 
     async def get(self, table, and_: dict) -> Optional[Mapping]:
+        and_ = {
+            key: self._tables[table].c[value]
+            for key, value in and_.items()
+        }
         return await self._db.fetch_one(
             self._tables[table].select().where(
                 sql_and(**and_)
@@ -146,6 +159,10 @@ class SqlWrapper:
         query = self._tables[table].select()
 
         if and_:
+            and_ = {
+                key: self._tables[table].c[value]
+                for key, value in and_.items()
+            }
             query = query.where(
                 sql_and(**and_)
             )
