@@ -48,6 +48,6 @@ jobs:
       - name: MongoDB server
         uses: supercharge/mongodb-github-action@1.6.0
         with:
-          mongodb-version: ['4.0', '4.2', '4.4']
+          mongodb-version: '4.4'
       - name: Run unit tests
         run: python run_tests.py --smtp_hostname localhost --smtp_port 1025 --smtp_email test@example.com --mongo_server localhost --mongo_port 27017 --sql_username ${{ secrets.DATABASE_USER }} --sql_password ${{ secrets.DATABASE_PASS }} --sql_server 127.0.0.1 --sql_port 3800 --sql_database ${{ secrets.DATABASE_DB }}
