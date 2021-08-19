@@ -12,7 +12,7 @@ class MongoWrapper:
 
     async def exists(self, table: str, or_: dict) -> bool:
         return await self._db[table].count_documents(
-            {"$or": or_}
+            {"$or": [{key: value} for key, value in or_.items()]}
         ) != 0
 
     async def delete(self, table: str,
