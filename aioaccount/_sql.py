@@ -105,10 +105,6 @@ class SqlWrapper:
 
     async def exists(self, table: str,
                      or_: dict) -> bool:
-        or_ = {
-            self._tables[table].c[key]: value
-            for key, value in or_.items()
-        }
         return await self._db.fetch_val(
             select([func.count()]).select_from(
                 self._tables[table]
