@@ -18,45 +18,45 @@ class TestAccount(TestBase):
     valid_password = "#!K2&33?e%@Pv3_Q"
 
     async def test_password_policy_invalid(self) -> None:
-        async with self.assertRaises(PasswordPolicyError):
+        with self.assertRaises(PasswordPolicyError):
             await self.handler.create_account(
                 password="1234hh$",
                 name="ward"
             )
 
     async def test_no_email_or_name(self) -> None:
-        async with self.assertRaises(AccountDetailsError):
+        with self.assertRaises(AccountDetailsError):
             await self.handler.create_account(
                 self.valid_password
             )
 
     async def test_invalid_email(self) -> None:
-        async with self.assertRaises(EmailError):
+        with self.assertRaises(EmailError):
             await self.handler.create_account(
                 password=self.valid_password,
                 email="something@.com"
             )
 
     async def test_invalid_names(self) -> None:
-        async with self.assertRaises(NameLengthInvalidError):
+        with self.assertRaises(NameLengthInvalidError):
             await self.handler.create_account(
                 password=self.valid_password,
                 name="war"
             )
 
-        async with self.assertRaises(NameLengthInvalidError):
+        with self.assertRaises(NameLengthInvalidError):
             await self.handler.create_account(
                 password=self.valid_password,
                 name="x" * (_MAX_NAME_LEN + 1)
             )
 
-        async with self.assertRaises(NameInvalidCharactersError):
+        with self.assertRaises(NameInvalidCharactersError):
             await self.handler.create_account(
                 password=self.valid_password,
                 name="war1"
             )
 
-        async with self.assertRaises(NameInvalidCharactersError):
+        with self.assertRaises(NameInvalidCharactersError):
             await self.handler.create_account(
                 password=self.valid_password,
                 name="war$"
