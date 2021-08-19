@@ -11,3 +11,4 @@ async-timeout
 aiojobs
 jinja2
 asynctest
+cryptography
