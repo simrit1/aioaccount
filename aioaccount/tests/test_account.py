@@ -63,10 +63,14 @@ class TestAccount(TestBase):
             )
 
     async def test_valid_account_only_email(self) -> None:
-        model, user = await self.handler.create_account(
-            password=self.valid_password,
-            email="wardpearce@pm.me"
-        )
+        try:
+            model, user = await self.handler.create_account(
+                password=self.valid_password,
+                email="wardpearce@pm.me"
+            )
+        except PasswordPolicyError as e:
+            print(e.fails)
+            raise e
 
         self.assertIsInstance(model, UserModel)
         self.assertIsInstance(user, User)
