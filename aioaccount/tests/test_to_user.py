@@ -18,7 +18,7 @@ class TestToUser(TestBase):
                 email="thisisn'treal"
             )
 
-    async def test_valid_to_user(self) -> None:
+    async def test_valid_to_user_from_name(self) -> None:
         c_model, _ = await self.handler.create_account(
             password=self.valid_password,
             name="epicgamer1"
@@ -26,6 +26,26 @@ class TestToUser(TestBase):
 
         model, user = await self.handler.to_user(
             name=c_model.name
+        )
+
+        self.assertIsInstance(
+            model,
+            UserModel
+        )
+
+        self.assertIsInstance(
+            user,
+            User
+        )
+
+    async def test_valid_to_user_from_email(self) -> None:
+        c_model, _ = await self.handler.create_account(
+            password=self.valid_password,
+            email="epicgamer@gmail.com"
+        )
+
+        model, user = await self.handler.to_user(
+            email=c_model.email
         )
 
         self.assertIsInstance(

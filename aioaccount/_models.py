@@ -3,7 +3,7 @@ from typing import Union
 
 
 @dataclass
-class UserModel(init=False):
+class UserModel:
     """Holds details on a user.
     """
 
