@@ -53,12 +53,6 @@ class TestAccount(TestBase):
         with self.assertRaises(NameInvalidCharactersError):
             await self.handler.create_account(
                 password=self.valid_password,
-                name="war1"
-            )
-
-        with self.assertRaises(NameInvalidCharactersError):
-            await self.handler.create_account(
-                password=self.valid_password,
                 name="war$"
             )
 

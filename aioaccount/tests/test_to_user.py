@@ -24,6 +24,8 @@ class TestToUser(TestBase):
             name="epicgamer1"
         )
 
+        print(f"using sql: {self.use_sql}")
+
         model, user = await self.handler.to_user(
             name=c_model.name
         )
@@ -39,6 +41,6 @@ class TestToUser(TestBase):
         )
 
 
-class TestToUserSqlSmtp(TestBase):
+class TestToUserSqlSmtp(TestToUser):
     use_sql = True
     use_smtp = True
