@@ -11,7 +11,7 @@ from .. import (
 )
 
 
-class TestAccount(TestBase):
+class TestCreateAccount(TestBase):
     use_sql = False
     use_smtp = False
 
@@ -85,6 +85,6 @@ class TestAccount(TestBase):
         self.assertIsInstance(user, User)
 
 
-class TestAccountSqlSmtp(TestAccount):
+class TestCreateAccountSqlSmtp(TestCreateAccount):
     use_sql = True
     use_smtp = True

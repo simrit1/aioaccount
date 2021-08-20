@@ -1,9 +1,9 @@
-from .test_account import TestAccount, TestAccountSqlSmtp
+from .test_create_account import TestCreateAccount, TestCreateAccountSqlSmtp
 from .test_to_user import TestToUser, TestToUserSqlSmtp
 
 __all__ = [
-    "TestAccount",
-    "TestAccountSqlSmtp",
+    "TestCreateAccount",
+    "TestCreateAccountSqlSmtp",
     "TestToUser",
     "TestToUserSqlSmtp"
 ]

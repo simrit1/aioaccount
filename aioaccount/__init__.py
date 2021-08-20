@@ -288,7 +288,7 @@ class AccountHandler:
         if email:
             values["email"] = email
         elif name:
-            values["user"] = name
+            values["name"] = name
         else:
             raise AccountDetailsError("User or email must be provided.")
 
