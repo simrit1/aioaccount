@@ -201,20 +201,20 @@ class AccountHandler:
         else:
             raise AccountDetailsError("User or email must be provided.")
 
-        row = await self._db_wrapper.get("user", search)
-        if not row:
+        result = await self._db_wrapper.get("user", search)
+        if not result:
             print("Getting details")
             raise InvalidLogin()
 
-        if self._smtp and row["email"] and not row["email_confirmed"]:
+        if self._smtp and result["email"] and not result["email_confirmed"]:
             print("Smtp stuff")
             raise InvalidLogin()
 
-        if not checkpw(password.encode(), row["password"]):
+        if not checkpw(password.encode(), result["password"]):
             print("Comparing hashes")
             raise InvalidLogin()
 
-        return UserModel(**row), self.user(row["user_id"])
+        return UserModel(**result), self.user(result["user_id"])
 
     def _email_regenerate(self) -> dict:
         return {

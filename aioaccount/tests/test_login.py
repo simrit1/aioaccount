@@ -49,7 +49,7 @@ class TestLogin(TestBase):
 
     async def test_valid_email_not_confirmed_with_smtp(self) -> None:
         if self.use_smtp:
-            model, _ = await self.handler.login(
+            model, _ = await self.handler.create_account(
                 password=self.valid_password,
                 email="newemail@gamil.com"
             )
@@ -62,7 +62,7 @@ class TestLogin(TestBase):
 
     async def test_valid_email_not_confirmed_without_smtp(self) -> None:
         if not self.use_smtp:
-            model, _ = await self.handler.login(
+            model, _ = await self.handler.create_account(
                 password=self.valid_password,
                 email="newemail59@gamil.com"
             )
@@ -73,7 +73,7 @@ class TestLogin(TestBase):
             )
 
     async def test_valid_with_name(self) -> None:
-        model, _ = await self.handler.login(
+        model, _ = await self.handler.create_account(
             password=self.valid_password,
             name="wogamer"
         )
@@ -85,7 +85,7 @@ class TestLogin(TestBase):
 
     async def test_valid_email_with_smtp(self) -> None:
         if self.use_smtp:
-            model, _ = await self.handler.login(
+            model, _ = await self.handler.create_account(
                 password=self.valid_password,
                 email="wpearce6@gmail.com"
             )
