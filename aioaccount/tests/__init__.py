@@ -1,6 +1,7 @@
 from .test_create_account import TestCreateAccount, TestCreateAccountSqlSmtp
 from .test_to_user import TestToUser, TestToUserSqlSmtp
 from .test_confirm_email import TestEmailConfirm, TestEmailConfirmMongo
+from .test_login import TestLogin, TestLoginSqlSmtp
 
 __all__ = [
     "TestCreateAccount",
@@ -8,5 +9,7 @@ __all__ = [
     "TestToUser",
     "TestToUserSqlSmtp",
     "TestEmailConfirm",
-    "TestEmailConfirmMongo"
+    "TestEmailConfirmMongo",
+    "TestLogin",
+    "TestLoginSqlSmtp"
 ]
