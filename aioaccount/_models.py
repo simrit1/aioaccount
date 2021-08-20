@@ -1,9 +1,9 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 from typing import Union
 
 
 @dataclass
-class UserModel:
+class UserModel(init=False):
     """Holds details on a user.
     """
 
@@ -11,3 +11,9 @@ class UserModel:
     name: Union[None, str] = None
     email: Union[None, str] = None
     email_confirmed: Union[None, bool] = None
+
+    def __init__(self, **kwargs):
+        names = set([f.name for f in fields(self)])
+        for k, v in kwargs.items():
+            if k in names:
+                setattr(self, k, v)
