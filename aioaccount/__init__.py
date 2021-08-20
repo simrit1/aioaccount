@@ -154,7 +154,7 @@ class AccountHandler:
                     f"Name is over {_MAX_NAME_LEN} or below 3 characters."
                 )
 
-            if not name.isalpha():
+            if not name.isalnum():
                 raise NameInvalidCharactersError(
                     "Account name can only contain alpha characters."
                 )
@@ -263,7 +263,8 @@ class AccountHandler:
 
         return self.user(result["user_id"])
 
-    async def to_user(self, email: str = None, name: str = None) -> User:
+    async def to_user(self, email: str = None,
+                      name: str = None) -> Tuple[UserModel, User]:
         """Used to convert email or user to user object.
 
         Parameters
@@ -275,6 +276,7 @@ class AccountHandler:
 
         Returns
         -------
+        UserModel
         User
 
         Raises
@@ -294,7 +296,7 @@ class AccountHandler:
         if not result:
             raise AccountDetailsError("No user found with those details.")
 
-        return self.user(result["user_id"])
+        return UserModel(**result), self.user(result["user_id"])
 
     async def create_account(self, password: str,
                              email: str = None, name: str = None
