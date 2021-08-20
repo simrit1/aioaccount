@@ -203,12 +203,15 @@ class AccountHandler:
 
         row = await self._db_wrapper.get("user", search)
         if not row:
+            print("Getting details")
             raise InvalidLogin()
 
         if self._smtp and row["email"] and not row["email_confirmed"]:
+            print("Smtp stuff")
             raise InvalidLogin()
 
         if not checkpw(password.encode(), row["password"]):
+            print("Comparing hashes")
             raise InvalidLogin()
 
         return UserModel(**row), self.user(row["user_id"])
