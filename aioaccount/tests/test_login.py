@@ -72,6 +72,30 @@ class TestLogin(TestBase):
                 password=self.valid_password
             )
 
+    async def test_valid_name_invalid_password(self) -> None:
+        model, _ = await self.handler.create_account(
+            password=self.valid_password,
+            name="wogamer420"
+        )
+
+        with self.assertRaises(InvalidLogin):
+            await self.handler.login(
+                password="1234",
+                name=model.name
+            )
+
+    async def test_valid_email_invalid_password(self) -> None:
+        model, _ = await self.handler.create_account(
+            password=self.valid_password,
+            email="somecreate@example.com"
+        )
+
+        with self.assertRaises(InvalidLogin):
+            await self.handler.login(
+                password="1234",
+                email=model.email
+            )
+
     async def test_valid_with_name(self) -> None:
         model, _ = await self.handler.create_account(
             password=self.valid_password,
