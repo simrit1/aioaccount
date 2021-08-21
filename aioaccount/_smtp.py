@@ -52,11 +52,11 @@ class SmtpClient:
         https://aiosmtplib.readthedocs.io/en/stable/client.html
         """
 
-        self._client = aiosmtplib.SMTP(
-            hostname=host,
-            port=port,
+        self._details = {
+            "hostname": host,
+            "port": port,
             **kwargs
-        )
+        }
 
         self._email = email
 
@@ -218,5 +218,4 @@ class SmtpClient:
         message["To"] = email
         message["Subject"] = email_type["subject"]
 
-        async with self._client:
-            await self._client.send_message(message)
+        await aiosmtplib.send(message, **self._details)
