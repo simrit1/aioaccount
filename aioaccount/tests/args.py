@@ -33,6 +33,5 @@ SQL_CONNECTION = "mysql://{}:{}@{}:{}/{}?charset=utf8mb4".format(
 SMTP_SETTINGS = {
     "host": args["smtp_hostname"],
     "port": args["smtp_port"],
-    "email": args["smtp_email"],
-    "url": "https://example.com"
+    "email": args["smtp_email"]
 }
