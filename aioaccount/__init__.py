@@ -165,7 +165,8 @@ class AccountHandler:
                 raise PasswordPolicyError(results)
 
     async def login(self, password: str, name: str = None,
-                    email: str = None) -> Tuple[UserModel, User]:
+                    email: str = None, require_email_confirmed: bool = True
+                    ) -> Tuple[UserModel, User]:
         """Used to validate user's login.
 
         Parameters
@@ -175,6 +176,8 @@ class AccountHandler:
             by default None
         email : str, optional
             by default None
+        require_email_confirmed : bool, optional
+            If true email must be confirmed, by default True
 
         Returns
         -------
@@ -205,7 +208,8 @@ class AccountHandler:
         if not result:
             raise InvalidLogin()
 
-        if self._smtp and result["email"] and not result["email_confirmed"]:
+        if (require_email_confirmed and self._smtp and result["email"]
+                and not result["email_confirmed"]):
             raise InvalidLogin()
 
         if not checkpw(password.encode(), result["password"]):
