@@ -20,3 +20,18 @@ Utility for user account creation, modification & email confirmation.
 - Password policies.
 - Password reset code expiration.
 - Email validation.
+
+## Thanks to
+- bcrypt
+- password-strength
+- databases
+- sqlalchemy
+- motor
+- email-validator
+- aiosmtplib
+- aiojobs
+- jinja2
+- asynctest
+- sphinx
+- sphinx material
+- Everyone who helped to make these packages
