@@ -7,7 +7,8 @@ from .. import (
     NameInvalidCharactersError,
     _MAX_NAME_LEN,
     UserModel,
-    User
+    User,
+    DetailsExistError
 )
 
 
@@ -83,6 +84,30 @@ class TestCreateAccount(TestBase):
 
         self.assertIsInstance(model, UserModel)
         self.assertIsInstance(user, User)
+
+    async def test_account_name_taken(self) -> None:
+        model, _ = await self.handler.create_account(
+            password=self.valid_password,
+            name="oopwe"
+        )
+
+        with self.assertRaises(DetailsExistError):
+            await self.handler.create_account(
+                password=self.valid_password,
+                name=model.name
+            )
+
+    async def test_account_email_taken(self) -> None:
+        model, _ = await self.handler.create_account(
+            password=self.valid_password,
+            email="oopwe@example.com"
+        )
+
+        with self.assertRaises(DetailsExistError):
+            await self.handler.create_account(
+                password=self.valid_password,
+                email=model.email
+            )
 
 
 class TestCreateAccountSqlSmtp(TestCreateAccount):
