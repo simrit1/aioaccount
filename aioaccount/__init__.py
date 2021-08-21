@@ -1,6 +1,6 @@
 import aiojobs
 
-from typing import Tuple, Union
+from typing import AsyncGenerator, Tuple, Union
 from databases import Database
 from secrets import token_urlsafe
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -120,6 +120,34 @@ class AccountHandler:
             await self._db.disconnect()
 
         await self._jobs.close()
+
+    async def users(self, email_confirmed: bool = None
+                    ) -> AsyncGenerator[Tuple[UserModel, User], None]:
+        """Used to list users.
+
+        Parameters
+        ----------
+        email_confirmed : bool, optional
+            by default None
+
+        Yields
+        -------
+        UserModel
+        User
+        """
+
+        if email_confirmed is not None:
+            and_ = {
+                "email_confirmed": None if email_confirmed is False else True
+            }
+        else:
+            and_ = None
+
+        async for result in self._db_wrapper.iterate("user", and_):
+            yield (
+                UserModel(**result),
+                self.user(result["user_id"])
+            )
 
     def user(self, user_id: str) -> User:
         """Used to interact with user.

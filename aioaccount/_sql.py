@@ -147,7 +147,7 @@ class SqlWrapper:
         )
 
     async def iterate(self, table: str, and_: dict = None
-                      ) -> AsyncGenerator[Optional[Mapping], None]:
+                      ) -> AsyncGenerator[Mapping, None]:
         query = self._tables[table].select()
 
         if and_:

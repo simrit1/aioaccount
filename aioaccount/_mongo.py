@@ -34,7 +34,7 @@ class MongoWrapper:
         return await self._db[table].find_one(and_)
 
     async def iterate(self, table: str, and_: dict = None
-                      ) -> AsyncGenerator[Optional[Mapping], None]:
+                      ) -> AsyncGenerator[Mapping, None]:
         find = self._db[table].find(and_) if and_ else self._db[table].find()
 
         async for document in find:
