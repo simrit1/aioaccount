@@ -5,6 +5,7 @@ from .test_login import TestLogin, TestLoginSqlSmtp
 from .test_update_password import TestUpdatePassword, TestUpdatePasswordSqlSmtp
 from .test_update_email import TestUpdateEmail, TestUpdateEmailMongo
 from .test_get_user import TestGetUser, TestGetUserMongo
+from .test_password_resets import TestPasswordResets, TestPasswordResetsMongo
 
 __all__ = [
     "TestCreateAccount",
@@ -20,5 +21,7 @@ __all__ = [
     "TestUpdateEmail",
     "TestUpdateEmailMongo",
     "TestGetUser",
-    "TestGetUserMongo"
+    "TestGetUserMongo",
+    "TestPasswordResets",
+    "TestPasswordResetsMongo"
 ]

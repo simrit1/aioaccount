@@ -24,7 +24,8 @@ from ._errors import (
     InvalidLogin,
     UnableToConfirmEmail,
     NameInvalidCharactersError,
-    UserIdError
+    UserIdError,
+    PasswordResetInvalid
 )
 from ._util import generate_id
 from ._models import UserModel
@@ -55,7 +56,9 @@ __all__ = [
     "NameLengthInvalidError",
     "UnableToConfirmEmail",
     "NameInvalidCharactersError",
-    "UserIdError"
+    "UserIdError",
+    "PasswordResetInvalid",
+    "InvalidLogin"
 ]
 
 

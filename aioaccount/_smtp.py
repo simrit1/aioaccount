@@ -33,8 +33,7 @@ class SmtpHtml:
 
 
 class SmtpClient:
-    def __init__(self, host: str, port: int,
-                 url: str, email: str,
+    def __init__(self, host: str, port: int, email: str,
                  **kwargs) -> None:
         """Used to configure SMTP.
 
@@ -42,14 +41,6 @@ class SmtpClient:
         ----------
         host : str
         port : int
-        url : str
-            Url user follows for validation
-            If it doesn't contain '{validation_code}'
-            the validation code will be append
-            to the end of the url
-
-            e.g.
-            https://example.com/validate?code={validation_code}
         email : str
             Email address to send as.
 
@@ -67,9 +58,6 @@ class SmtpClient:
             **kwargs
         )
 
-        self._url = url
-        self._url_contains_placement = "{validation_code}" in self._url
-
         self._email = email
 
         self._email_types = {
@@ -77,23 +65,35 @@ class SmtpClient:
                 "raw": "Please confirm your email\n{link}",
                 "raw_place": True,
                 "html": None,
-                "subject": "Please confirm your email!"
+                "subject": "Please confirm your email!",
+                "url": "",
+                "contains_code": False
             },
             "reset": {
                 "raw": "Follow this link to reset your password\n{link}",
                 "raw_place": True,
                 "html": None,
-                "subject": "Password reset request"
+                "subject": "Password reset request",
+                "url": "",
+                "contains_code": False
             }
         }
 
-    def confrim_layout(self, html: SmtpHtml = None, raw: str = None,
-                       subject: str = None
+    def confrim_layout(self, url: str, html: SmtpHtml = None,
+                       raw: str = None, subject: str = None
                        ) -> SmtpClient:
         """Used for confirm email layout.
 
         Parameters
         ----------
+        url : str
+            Url user follows for validation
+            If it doesn't contain '{validation_code}'
+            the validation code will be append
+            to the end of the url
+
+            e.g.
+            https://example.com/validate?code={validation_code}
         html: SmtpHtml, optional
             by default None
         raw : str, optional
@@ -108,6 +108,11 @@ class SmtpClient:
         -------
         SmtpClient
         """
+
+        self._email_types["confirm"]["url"] = url
+        self._email_types["confirm"][
+            "contains_code"
+        ] = "{validation_code}" in url
 
         if raw:
             self._email_types["confirm"]["raw"] = raw
@@ -124,13 +129,21 @@ class SmtpClient:
 
         return self
 
-    def reset_layout(self, html: SmtpHtml = None, raw: str = None,
-                     subject: str = None
+    def reset_layout(self, url: str, html: SmtpHtml = None,
+                     raw: str = None, subject: str = None
                      ) -> SmtpClient:
         """Used for reset email layout.
 
         Parameters
         ----------
+        url : str
+            Url user follows for validation
+            If it doesn't contain '{validation_code}'
+            the validation code will be append
+            to the end of the url
+
+            e.g.
+            https://example.com/validate?code={validation_code}
         html: SmtpHtml, optional
             by default None
         raw : str, optional
@@ -145,6 +158,11 @@ class SmtpClient:
         -------
         SmtpClient
         """
+
+        self._email_types["confirm"]["url"] = url
+        self._email_types["confirm"][
+            "contains_code"
+        ] = "{validation_code}" in url
 
         if raw:
             self._email_types["reset"]["raw"] = raw
@@ -172,12 +190,12 @@ class SmtpClient:
             email type
         """
 
-        if self._url_contains_placement:
-            link = self._url.format(validation_code=code)
-        else:
-            link = self._url + code
-
         email_type = self._email_types[type_]
+
+        if email_type["contains_code"]:
+            link = email_type["url"].format(validation_code=code)
+        else:
+            link = email_type["url"] + code
 
         if email_type["html"]:
             message = MIMEText(email_type["html"]._jinja2.get_template(
