@@ -12,3 +12,5 @@ aiojobs
 jinja2
 asynctest
 cryptography
+sphinx-material
+sphinxcontrib-trio
