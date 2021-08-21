@@ -19,7 +19,7 @@ class TestUpdatePassword(TestBase):
     async def test_valid_user_invalid_old_pass(self) -> None:
         _, user = await self.handler.create_account(
             password=self.old_password,
-            email="deezemail@example.com"
+            name="deezemail"
         )
 
         with self.assertRaises(InvalidLogin):
@@ -31,7 +31,7 @@ class TestUpdatePassword(TestBase):
     async def test_valid_user_invalid_new_pass(self) -> None:
         _, user = await self.handler.create_account(
             password=self.old_password,
-            email="eeezz@example.com"
+            name="eeezz"
         )
 
         with self.assertRaises(PasswordPolicyError):
@@ -43,7 +43,7 @@ class TestUpdatePassword(TestBase):
     async def test_valid_user(self) -> None:
         model, user = await self.handler.create_account(
             password=self.old_password,
-            email="ppez@example.com"
+            name="ppez"
         )
 
         await user.update_password(
@@ -53,7 +53,7 @@ class TestUpdatePassword(TestBase):
 
         await self.handler.login(
             password=self.new_password,
-            email=model.email
+            name=model.name
         )
 
 
