@@ -6,7 +6,7 @@ from datetime import datetime
 
 from ._models import UserModel
 from ._errors import (
-    InvalidUserId,
+    UserIdError,
     InvalidLogin,
     EmailError,
     PasswordResetInvalid,
@@ -215,11 +215,11 @@ class User:
 
         Raises
         ------
-        InvalidUserId
+        UserIdError
         """
 
         result = await self.__raw_user()
         if not result:
-            raise InvalidUserId()
+            raise UserIdError()
 
         return UserModel(**result)

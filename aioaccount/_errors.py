@@ -45,6 +45,6 @@ class InvalidLogin(AioAccountError):
         super().__init__("Provided details are incorrect.", *args)
 
 
-class InvalidUserId(AioAccountError):
+class UserIdError(AioAccountError):
     def __init__(self, msg: str = "User id incorrect.", *args: object) -> None:
         super().__init__(msg, *args)
