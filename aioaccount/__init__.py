@@ -10,7 +10,7 @@ from bcrypt import hashpw, gensalt, checkpw
 from datetime import timedelta
 
 from ._engines import SQLEngine, MongoEngine
-from ._smtp import SmtpClient
+from ._smtp import SmtpClient, SmtpHtml
 from ._pass_policy import PasswordPolicy
 from ._sql import create_tables, SqlWrapper
 from ._mongo import MongoWrapper
@@ -32,7 +32,7 @@ from ._models import UserModel
 from ._user import User
 from ._const import _MAX_NAME_LEN
 
-__version__ = "0.0.1"
+__version__ = "0.0.0"
 __url__ = "https://aioaccount.readthedocs.io/en/latest/"
 __description__ = "Utility for user account creation."
 __author__ = "WardPearce"
@@ -57,7 +57,8 @@ __all__ = [
     "NameInvalidCharactersError",
     "UserIdError",
     "PasswordResetInvalid",
-    "InvalidLogin"
+    "InvalidLogin",
+    "SmtpHtml"
 ]
 
 

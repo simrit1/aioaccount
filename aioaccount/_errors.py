@@ -1,4 +1,7 @@
 class AioAccountError(Exception):
+    """Base AioAccount Error
+    """
+
     def __init__(self, msg: str, *args: object) -> None:
         super().__init__(msg, *args)
 

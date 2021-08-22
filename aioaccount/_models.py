@@ -5,6 +5,13 @@ from typing import Union
 @dataclass
 class UserModel:
     """Holds details on a user.
+
+    Attributes
+    ----------
+    user_id : str
+    name : Union[None, str]
+    email : Union[None, str]
+    email_confirmed : Union[None, bool]
     """
 
     user_id: str

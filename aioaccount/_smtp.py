@@ -79,7 +79,7 @@ class SmtpClient:
             }
         }
 
-    def confrim_layout(self, url: str, html: SmtpHtml = None,
+    def confirm_layout(self, url: str, html: SmtpHtml = None,
                        raw: str = None, subject: str = None
                        ) -> SmtpClient:
         """Used for confirm email layout.

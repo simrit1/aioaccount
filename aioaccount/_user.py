@@ -45,6 +45,7 @@ class User:
         Raises
         ------
         InvalidLogin
+        PasswordPolicyError
         """
 
         user = await self.__raw_user()
@@ -174,6 +175,7 @@ class User:
         Raises
         ------
         PasswordResetInvalid
+        PasswordPolicyError
         """
 
         result = await self.__raw_user()
