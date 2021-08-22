@@ -32,7 +32,7 @@ from ._models import UserModel
 from ._user import User
 from ._const import _MAX_NAME_LEN
 
-__version__ = "0.0.0"
+__version__ = "0.0.1"
 __url__ = "https://aioaccount.readthedocs.io/en/latest/"
 __description__ = "Utility for user account creation."
 __author__ = "WardPearce"
