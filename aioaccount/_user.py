@@ -225,3 +225,9 @@ class User:
             raise UserIdError()
 
         return UserModel(**result)
+
+    async def delete(self) -> None:
+        """Used to delete account, this can't be undone.
+        """
+
+        await self._upper._db_wrapper.delete("user", self.__and)
