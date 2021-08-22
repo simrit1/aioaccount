@@ -4,6 +4,9 @@ Utility for user account creation, modification & email confirmation.
 ## Installation
 `pip3 install aioaccount`
 
+## Docs
+[aioaccount.readthedocs.io](https://aioaccount.readthedocs.io/en/latest/)
+
 ## Features
 - Security.
 - Easy to use.
