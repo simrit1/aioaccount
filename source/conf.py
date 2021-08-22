@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'dathost'
+project = 'aioaccount'
 copyright = '2021, WardPearce'
 author = 'WardPearce'
 
