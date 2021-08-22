@@ -1,0 +1,16 @@
+bcrypt
+password-strength
+databases[postgresql]
+databases[mysql]
+databases[sqlite]
+sqlalchemy==1.3.20
+motor
+email-validator
+aiosmtplib
+async-timeout
+aiojobs
+jinja2
+asynctest
+cryptography
+sphinx-material
+sphinxcontrib-trio
