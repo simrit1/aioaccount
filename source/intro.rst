@@ -6,7 +6,7 @@ This is a simple introduction for using aioaccount.
 
 User ID format
 --------------
-User IDs are UUID4 with the '-', this is a 32 characters long string.
+User IDs are UUID4 without the '-', this is a 32 characters long string.
 
 Basics
 ------
